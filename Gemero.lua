@@ -140,10 +140,10 @@ end
 
 local function MenuClick(E,P,U,S,I,code) P:GossipClearMenu()
 
-	if S==0 and I==0 then Hello(E,P,U) end
-	if S==8 and I==0 then P:AddItem(49110,1) Hello(E,P,U) return end
-  --if S==9 and I==0 then P:AddItem(41611,1) Hello(E,P,U) return end 
-	if S==10 and I==0 then P:AddItem(42225,1) Hello(E,P,U) return end
+	if S==0 and I==0 then Saludo(E,P,U) end
+	if S==8 and I==0 then P:AddItem(49110,1) Saludo(E,P,U) return end
+  --if S==9 and I==0 then P:AddItem(41611,1) Saludo(E,P,U) return end 
+	if S==10 and I==0 then P:AddItem(42225,1) Saludo(E,P,U) return end
 
 	if S >= 1 then 
 		for a=1,#menu[S] do local a,b,c,d,e,f = table.unpack(menu[S][a]) P:GossipMenuAddItem(a,b,c,d,e,f) end 
