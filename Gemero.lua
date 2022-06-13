@@ -1,5 +1,7 @@
+local NpcId = 0000 	 	--> Asigna el Entry del NPC que correrá el Script.
+local Precio = 1  		--> SOLO 1 ó 0, Si colocas otro número no funcionará. Coloca 1 si quieres que las gemas cuesten dinero. 
+local oro = 20 			--> Coloca el precio en ORO que quieres que cuesten las gemas.
 
-local NpcId = 200005 	--> Asigna el Entry del NPC que correrá el Script.
 
 local q,ro,na,am,ve,az,mo,bl = 'Escribe la cantidad (Max 20)','|cffed0000','|cffff9900','|cffffe600','|cff00d100','|cff0048ff','|cff7500b5','|cffffffff'
 
@@ -22,7 +24,7 @@ local menu = {
 		{0,mo.."Morado",				6,0},
 		{0,bl.."Meta",					7,0},
 		{1,mo.."[Lágrima de pesadilla]",8,0},
-	  --{1,az.."[Hebilla eterna]",9,0},
+	  	{1,az.."[Hebilla eterna]",9,0},
 		{1,az.."[Ojo de dragón]",10,0}},
 	[1]={
 		{1, ro.."1-|r Fuerza", 								1, 1, true, q},
@@ -141,9 +143,51 @@ end
 local function MenuClick(E,P,U,S,I,code) P:GossipClearMenu()
 
 	if S==0 and I==0 then Saludo(E,P,U) end
-	if S==8 and I==0 then P:AddItem(49110,1) Saludo(E,P,U) return end
-  --if S==9 and I==0 then P:AddItem(41611,1) Saludo(E,P,U) return end 
-	if S==10 and I==0 then P:AddItem(42225,1) Saludo(E,P,U) return end
+
+	if S==8 and I==0 then 
+		if Precio == 1 then
+			if P:GetCoinage() >= 1500000 then
+				P:ModifyMoney(-1500000)
+				P:SendBroadcastMessage('Pagaste 150 de oro por una Lágrima de pesadilla.')
+			else
+			U:SendUnitSay('No tienes suficiente dinero.',0)
+			P:GossipComplete()
+			return end
+		end 
+		P:AddItem(49110,1)		
+		Saludo(E,P,U)
+		return 
+	end
+
+    if S==9 and I==0 then
+    	if Precio == 1 then
+    		if P:GetCoinage() >= 850000 then
+			P:ModifyMoney(-850000)
+			P:SendBroadcastMessage('Pagaste 85 de oro por una Hebilla eterna.')
+		else
+			U:SendUnitSay('No tienes suficiente dinero.',0)
+			P:GossipComplete()
+			return end
+		end
+    	P:AddItem(41611,1)    	
+    	Saludo(E,P,U) 
+    	return 
+    end 
+
+	if S==10 and I==0 then 
+		if Precio == 1 then
+			if P:GetCoinage() >= 1200000 then
+				P:ModifyMoney(-1200000) 
+				P:SendBroadcastMessage('Pagaste 120 de oro por un Ojo de dragón.')
+			else
+			U:SendUnitSay('No tienes suficiente dinero.',0)
+			P:GossipComplete()
+			return end
+		end
+		P:AddItem(42225,1)
+		Saludo(E,P,U) 
+		return 
+	end
 
 	if S >= 1 then 
 		for a=1,#menu[S] do local a,b,c,d,e,f = table.unpack(menu[S][a]) P:GossipMenuAddItem(a,b,c,d,e,f) end 
@@ -157,12 +201,27 @@ local function MenuClick(E,P,U,S,I,code) P:GossipClearMenu()
 		
 		if num<=0 then U:SendUnitSay(ing,0) P:GossipComplete() return end
 
-		if num >=1 and num <=20 then 
-			P:AddItem(ids[S][I],num) 
+		if num >=1 and num <=20 then
+
+			if Precio == 1 then
+				if P:GetCoinage() >= ((oro*10000)*num) then
+				 	P:ModifyMoney( (-1*(oro*10000)*num) )
+					P:AddItem(ids[S][I],num)
+					P:GossipComplete()
+					P:SendBroadcastMessage('Has pagado '..oro*num..' de oro.')					
+				else
+					U:SendUnitSay('No tienes suficiente dinero para realizar esta compra.',0)
+					P:GossipComplete()
+				end
+			else 
+				P:AddItem(ids[S][I],num)
+				P:GossipComplete()
+			end		
 		else 
-			U:SendUnitSay(max,0) 
+			U:SendUnitSay(max,0)
+			P:GossipComplete() 
 		end
-	end	
+	end		
 end
 RegisterCreatureGossipEvent(NpcId, 1, Saludo)
 RegisterCreatureGossipEvent(NpcId, 2, MenuClick)
